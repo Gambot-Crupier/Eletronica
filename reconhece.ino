@@ -12,7 +12,7 @@ Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN);
 int salvaposicao[] = {0, 0, 0, 0, 0, 0, 0, 0};
 int contador = 0;
 int contaPassos = 1;
-int numerodejogadores = 2;
+int numerodejogadores = 3;
 int posicao = 0;
 int somadospassos = 0;
 int IdentificaPessoa = 1;
@@ -87,7 +87,7 @@ void loop() {
   delay(20);
 
   if (DISTANCE != 0 && DISTANCE <= 10.0 && IdentificaPessoa == 1) {
-    salvaposicao[contador] = contaPassos;
+    salvaposicao[contador] = contaPassos + 60;
     contaPassos = 1;
     Serial.println("Identificou");
     Serial.println(salvaposicao[contador]);
@@ -96,7 +96,7 @@ void loop() {
     
   }
 
-  if (DISTANCE != 0 && DISTANCE >= 10.0 && IdentificaPessoa == 0) {
+  if (DISTANCE != 0 && DISTANCE >= 10.0 && IdentificaPessoa == 0 && contaPassos >= 100) {
     IdentificaPessoa = 1;
     Serial.println("Saiu");
   }
