@@ -18,9 +18,10 @@ Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN);
 
 //Motor e sensor distancia
 int salvaposicao[] = {0, 0, 0, 0, 0, 0, 0, 0};
+int posicaocartasnamesa[] = {0, 0, 0, 0, 0};
 int contador = 0;
 int contaPassos = 1;
-int numerodejogadores = 3;
+int numerodejogadores = 4;
 int posicao = 0;
 int somadospassos = 0;
 int IdentificaPessoa = 0;
@@ -69,8 +70,9 @@ void loop() {
 
   delay(1000);
 
-  SetaJogadores();
+  DistribuiCartas();
 
+  delay(10000);
 }
 
 
@@ -196,7 +198,7 @@ void IdentificaPessoas( void * pvParameters ) {
   vTaskSuspend(NULL);
 }
 
-void SetaJogadores() {
+void DistribuiCartas() {
   digitalWrite(DIRECTION_PIN, HIGH);
   posicao = 0;
   for (int x = 0; x < numerodejogadores; x++) {
@@ -206,6 +208,12 @@ void SetaJogadores() {
     posicao++;
     somadospassos = salvaposicao[x] + somadospassos;
     delay(1000);
+
+    for (int x = 0; x < 2; x++) {
+      //FUNCAO POSICIONA
+      //FUNCAO TIRAFOTO
+      //FUNCAO LANCAO
+    }
   }
 
   for (int x = numerodejogadores; x < 8; x++) {
@@ -214,4 +222,40 @@ void SetaJogadores() {
   for (int x = 0; x < (1600 - somadospassos); x++) {
     pulso();
   }
+  
+  posicaocartasnamesa[0] = salvaposicao[0];
+  
+  for (int x = 1; x < 5; x++) {
+    posicaocartasnamesa[x] = 160;
+  }
+  posicao = 0;
+  
+  digitalWrite(DIRECTION_PIN, LOW);
+  for (int x = 0; x < 1600; x++) {
+    pulso();
+  }
+  
+  digitalWrite(DIRECTION_PIN, HIGH);
+  
+  for (int x = 0; x < 5; x++) {
+    for (int x = 0; x < posicaocartasnamesa[posicao]; x++) {
+      pulso();
+    }
+    posicao++;
+    delay(1000);
+
+    for (int x = 0; x < 2; x++) {
+      //FUNCAO POSICIONA
+      //FUNCAO TIRAFOTO
+      //FUNCAO LANCAO
+    }
+  }
+
+  digitalWrite(DIRECTION_PIN, LOW);
+  for (int x = 0; x < posicaocartasnamesa[0] + 640; x++) {
+    pulso();
+  }
+  
+  posicao = 0;
+
 }
