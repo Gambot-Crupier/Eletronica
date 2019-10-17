@@ -21,7 +21,7 @@ int salvaposicao[] = {0, 0, 0, 0, 0, 0, 0, 0};
 int posicaocartasnamesa[] = {0, 0, 0, 0, 0};
 int contador = 0;
 int contaPassos = 1;
-int numerodejogadores = 4;
+int numerodejogadores = 3;
 int posicao = 0;
 int somadospassos = 0;
 int IdentificaPessoa = 0;
@@ -144,9 +144,9 @@ void LeituradoSensorDeDistancia() {
   Serial.println(DISTANCE);
   delay(20);
 
-  if (DISTANCE != 0 && DISTANCE <= 20.0 && IdentificaPessoa == 0) {
+  if (DISTANCE != 0 && DISTANCE <= 8.0 && IdentificaPessoa == 0) {
     IdentificaPessoa = 1;
-    salvaposicao[contador] = contaPassos + 20;
+    salvaposicao[contador] = contaPassos;
     contaPassos = 1;
     Serial.println("Identificou");
     Serial.println(salvaposicao[contador]);
@@ -170,7 +170,7 @@ void IdentificaPessoas( void * pvParameters ) {
 
   digitalWrite(DIRECTION_PIN, HIGH);
 
-  for (int x = 0; x < 1600; x++) { // 200 passos é uma volta, tá 1600 pq o passo está em 1/8
+  for (int x = 0; x < 2300; x++) { // 200 passos é uma volta, tá 2300 pq o passo está em 1/8
     pulso();
     contaPassos = contaPassos + 1;
     if (IdentificaPessoa == 1) {
@@ -188,7 +188,7 @@ void IdentificaPessoas( void * pvParameters ) {
 
 
   digitalWrite(DIRECTION_PIN, LOW);
-  for (int x = 0; x < 1600; x++) {
+  for (int x = 0; x < 2300; x++) {
     pulso();
   }
 
@@ -219,7 +219,7 @@ void DistribuiCartas() {
   for (int x = numerodejogadores; x < 8; x++) {
     salvaposicao[x] = 0;
   }
-  for (int x = 0; x < (1600 - somadospassos); x++) {
+  for (int x = 0; x < (2300 - somadospassos); x++) {
     pulso();
   }
   
@@ -231,7 +231,7 @@ void DistribuiCartas() {
   posicao = 0;
   
   digitalWrite(DIRECTION_PIN, LOW);
-  for (int x = 0; x < 1600; x++) {
+  for (int x = 0; x < 2300; x++) {
     pulso();
   }
   
