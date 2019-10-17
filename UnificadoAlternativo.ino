@@ -230,6 +230,7 @@ void DistribuiCartas() {
   }
   posicao = 0;
   
+  delay(1000);
   digitalWrite(DIRECTION_PIN, LOW);
   for (int x = 0; x < 2300; x++) {
     pulso();
