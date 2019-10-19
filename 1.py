@@ -1,3 +1,5 @@
+https://people.csail.mit.edu/albert/bluez-intro/x232.html
+
 import RPi.GPIO as GPIO
 import RPi.GPIO as GPIO2
 
