@@ -21,4 +21,5 @@ void loop() {
   for (int x = 0; x < Passos; x++) {
       pulso();
   }
+  delay(1000);
 }
