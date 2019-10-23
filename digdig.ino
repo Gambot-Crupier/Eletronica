@@ -2,7 +2,7 @@
 #define STEP_PIN 33
 
 int Passos = 1000;
-
+int Direcao = 0;
 void pulso() {
   digitalWrite(STEP_PIN, HIGH);
   delayMicroseconds(1000);
@@ -17,6 +17,7 @@ void setup() {
 }
 
 void loop() {
+  digitalWrite(DIRECTION_PIN, Direcao);
   for (int x = 0; x < Passos; x++) {
       pulso();
   }
