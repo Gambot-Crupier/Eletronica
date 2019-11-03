@@ -35,7 +35,7 @@ pic         = 0     # Envia Mensagem para Raspberry Fotografar a Carta
 
 
 
-            ########## SETUP ##########
+            ########## SETUP ########## 
 
 GPIO.setmode(GPIO.BOARD) # Referência numérica dos pinos
 
