@@ -23,5 +23,3 @@ ConectaThread.start()
 
 while checaconexao():
     print(".")
-
-GPIO.cleanup()
