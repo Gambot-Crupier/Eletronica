@@ -29,7 +29,6 @@ NumerodePassos = 9520
 config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
-imagePaths = sorted(list(paths.list_images('/home/pi/Desktop/fotoCarta/carta.jpg')))
 modelNaipe = load_model('/home/pi/Desktop/fotoCarta/Naipe.model')
 modelNumero = load_model('/home/pi/Desktop/fotoCarta/Numeros.model')
 
@@ -128,53 +127,53 @@ def identificaPessoascomApp(salvaPosicao):
     return PosicaoDosJogadores
 
 def reconheceCartas():
-    for imagePath in imagePaths:
-        image = cv2.imread(imagePath)
-        orig = image.copy()
-        image = cv2.resize(image, (56, 56))
-        image = image.astype("float") / 255.0
-        image = img_to_array(image)
-        image = np.expand_dims(image, axis=0)
-        predicao = modelNaipe.predict(image)[0]
-        nome = []
-        #IDENTIFICA NAIPE    
-        predicao = modelNumero.predict(image)[0]
-        if np.argmax(predicao) == 1:
-            nome.append("c")
-        if np.argmax(predicao) == 2:
-            nome.append("d")
-        if np.argmax(predicao) == 3:
-            nome.append("h")
-        if np.argmax(predicao) == 4:
-            nome.append("s")
-        #IDENTIFICA NUMERO
-        if np.argmax(predicao) == 1:
-            nome.append("a")
-        if np.argmax(predicao) == 2:
-            nome.append("2")
-        if np.argmax(predicao) == 3:
-            nome.append("3")
-        if np.argmax(predicao) == 4:
-            nome.append("4")
-        if np.argmax(predicao) == 5:
-            nome.append("5")
-        if np.argmax(predicao) == 6:
-            nome.append("6")
-        if np.argmax(predicao) == 7:
-            nome.append("7")
-        if np.argmax(predicao) == 8:
-            nome.append("8")
-        if np.argmax(predicao) == 9:
-            nome.append("9")
-        if np.argmax(predicao) == 10:
-            nome.append("10")
-        if np.argmax(predicao) == 11:
-            nome.append("j")
-        if np.argmax(predicao) == 12:
-            nome.append("q")
-        if np.argmax(predicao) == 13:
-            nome.append("k")
-        return nome
+    nome = []
+    image = cv2.imread('/home/pi/Desktop/fotoCarta/carta.jpg')
+    orig = image.copy()
+    image = cv2.resize(image, (56, 56))
+    image = image.astype("float") / 255.0
+    image = img_to_array(image)
+    image = np.expand_dims(image, axis=0)
+    
+    predicao = modelNaipe.predict(image)[0]
+    #IDENTIFICA NAIPE    
+    if np.argmax(predicao) == 1:
+        nome.append("c")
+    if np.argmax(predicao) == 2:
+        nome.append("d")
+    if np.argmax(predicao) == 3:
+        nome.append("h")
+    if np.argmax(predicao) == 4:
+        nome.append("s")
+    predicao = modelNumero.predict(image)[0]
+    #IDENTIFICA NUMERO
+    if np.argmax(predicao) == 1:
+        nome.append("a")
+    if np.argmax(predicao) == 2:
+        nome.append("2")
+    if np.argmax(predicao) == 3:
+        nome.append("3")
+    if np.argmax(predicao) == 4:
+        nome.append("4")
+    if np.argmax(predicao) == 5:
+        nome.append("5")
+    if np.argmax(predicao) == 6:
+        nome.append("6")
+    if np.argmax(predicao) == 7:
+        nome.append("7")
+    if np.argmax(predicao) == 8:
+        nome.append("8")
+    if np.argmax(predicao) == 9:
+        nome.append("9")
+    if np.argmax(predicao) == 10:
+        nome.append("10")
+    if np.argmax(predicao) == 11:
+        nome.append("j")
+    if np.argmax(predicao) == 12:
+        nome.append("q")
+    if np.argmax(predicao) == 13:
+        nome.append("k")
+    return nome
 
 def entregaCartas(salvaPosicao,PosicaoDosJogadores):
 
