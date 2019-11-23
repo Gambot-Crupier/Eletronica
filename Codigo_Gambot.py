@@ -194,7 +194,7 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
 
     for x in range (0, NumerodeJogadores): #Cria matriz para enviar dados
         informacoesJogadores[x][0] = PosicaoDosJogadores[x]
-
+    nome = []
     for i in range(NumerodeJogadores*2):
         for p in range((salvaPosicao[j+1])): #GIRA MOTOR ATE A PESSOA
             pulso()
@@ -202,6 +202,7 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
             pulso()
         cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
         ret, image = cam.read()   
+        
         nome =  reconheceCartas() #RECONHECE A CARTA
         for q in range(2):
             informacoesJogadores[j][k+q] =  nome[q]
