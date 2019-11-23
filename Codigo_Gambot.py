@@ -136,47 +136,44 @@ def reconheceCartas():
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
         predicao = modelNaipe.predict(image)[0]
-        #IDENTIFICA NUMERO
-        nome = "a"
-        if np.argmax(predicao) == 1:
-            nome = "A"
-        if np.argmax(predicao) == 2:
-            nome = "2"
-        if np.argmax(predicao) == 3:
-            nome = "3"
-        if np.argmax(predicao) == 4:
-            nome = "4"
-        if np.argmax(predicao) == 5:
-            nome = "5"
-        if np.argmax(predicao) == 6:
-            nome = "6"
-        if np.argmax(predicao) == 7:
-            nome = "7"
-        if np.argmax(predicao) == 8:
-            nome = "8"
-        if np.argmax(predicao) == 9:
-            nome = "9"
-        if np.argmax(predicao) == 10:
-            nome = "10"
-        if np.argmax(predicao) == 11:
-            nome = "J"
-        if np.argmax(predicao) == 12:
-            nome = "Q"
-        if np.argmax(predicao) == 13:
-            nome = "K"
-
+        nome = []
         #IDENTIFICA NAIPE    
         predicao = modelNumero.predict(image)[0]
-
         if np.argmax(predicao) == 1:
-            nome = nome + "paus"
+            nome.append("c")
         if np.argmax(predicao) == 2:
-            nome = nome + "ouro"
+            nome.append("d")
         if np.argmax(predicao) == 3:
-            nome = nome + "copas"
+            nome.append("h")
         if np.argmax(predicao) == 4:
-            nome = nome + "espadas"   
-
+            nome.append("s")
+        #IDENTIFICA NUMERO
+        if np.argmax(predicao) == 1:
+            nome.append("a")
+        if np.argmax(predicao) == 2:
+            nome.append("2")
+        if np.argmax(predicao) == 3:
+            nome.append("3")
+        if np.argmax(predicao) == 4:
+            nome.append("4")
+        if np.argmax(predicao) == 5:
+            nome.append("5")
+        if np.argmax(predicao) == 6:
+            nome.append("6")
+        if np.argmax(predicao) == 7:
+            nome.append("7")
+        if np.argmax(predicao) == 8:
+            nome.append("8")
+        if np.argmax(predicao) == 9:
+            nome.append("9")
+        if np.argmax(predicao) == 10:
+            nome.append("10")
+        if np.argmax(predicao) == 11:
+            nome.append("j")
+        if np.argmax(predicao) == 12:
+            nome.append("q")
+        if np.argmax(predicao) == 13:
+            nome.append("k")
         return nome
 
 def entregaCartas(salvaPosicao,PosicaoDosJogadores):
@@ -193,7 +190,7 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     informacoesJogadores = []
 
     for x in range (0, NumerodeJogadores): #Cria matriz para enviar dados
-        informacoesJogadores.append(['','',''])
+        informacoesJogadores.append(['','','','',''])
 
     for x in range (0, NumerodeJogadores): #Cria matriz para enviar dados
         informacoesJogadores[x][0] = PosicaoDosJogadores[x]
@@ -204,13 +201,15 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
         for q in range(NumerodePassosParaPosicionar):  #POSICIONA CARTA PARA FOTO   
             pulso()
         cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
-        ret, image = cam.read()           
-        informacoesJogadores[j][k] =  reconheceCartas() #RECONHECE A CARTA
+        ret, image = cam.read()   
+        nome =  reconheceCartas() #RECONHECE A CARTA
+        for q in range(2):
+            informacoesJogadores[j][k+q] =  nome[q]
         for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR 
             pulso()
 
         trocadeJogador = trocadeJogador + 1
-        k = k + 1
+        k = k + 2
         if trocadeJogador == 2:
             trocadeJogador = 0
             j = j + 1
@@ -226,11 +225,11 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
         pulso();
     time.sleep(1)
 
-    #ENTREGA CARTAS NA MESA
+    #ENTREGA 3 CARTAS NA MESA
 
-    informacoesMesa = ['','','','','']
+    informacoesMesaRiver = []
 
-    for i in range(5):
+    for i in range(3):
         if i == 0:
             for p in range((salvaPosicao[0])): #GIRA MOTOR ATE A PRIMEIRA PESSOA
                 pulso()
@@ -243,15 +242,58 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
 
         cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
         ret, image = cam.read()           
-        informacoesMesa[0] = reconheceCartas() #RECONHECE A CARTA
+        informacoesMesaRiver.append(reconheceCartas()) #RECONHECE A CARTA
             
         for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
             pulso()
 
     #ENVIA DADOS PARA O SERVIDOR
-        #A MATRIZ informacoesJogadores está da seguinte forma [id_jogador, carta1, carta2;
-                                                            #  id_jogador2,carta1,carta2 ...]
-        #O VETOR informacoesMesa está da seguinte forma [carta1,carta2,carta3,carta4,carta5]
+        #A MATRIZ informacoesJogadores está da seguinte forma [id_jogador, naipe1,valor1,naipe2,valor2]
+        #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1,naipe2,valor2,naipe3,valor3]
+
+
+    #ENTREGA 1 CARTAS NA MESA
+
+    informacoesMesaTurn = []
+    for p in range(200): #GIRA MOTOR ATE A PRIMEIRA PESSOA
+        pulso()
+
+    for q in range(NumerodePassosParaPosicionar):  #POSICIONA CARTA PARA FOTO 
+        pulso()
+
+    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
+    ret, image = cam.read()           
+    informacoesMesaTurn.append(reconheceCartas()) #RECONHECE A CARTA
+        
+    for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
+        pulso()
+
+    #ENVIA DADOS PARA O SERVIDOR
+
+        #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1]
+
+
+    #ENTREGA 1 CARTAS NA MESA
+
+    informacoesMesaFlop = []
+    for p in range(200): #GIRA MOTOR ATE A PRIMEIRA PESSOA
+        pulso()
+
+    for q in range(NumerodePassosParaPosicionar):  #POSICIONA CARTA PARA FOTO 
+        pulso()
+
+    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
+    ret, image = cam.read()           
+    informacoesMesaFlop.append(reconheceCartas()) #RECONHECE A CARTA
+        
+    for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
+        pulso()
+
+    #ENVIA DADOS PARA O SERVIDOR
+
+        #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1]
+
+
 def jogoContinua():
     #LE DADOS DO JSON
     if FlagJogoContinua == 1:
