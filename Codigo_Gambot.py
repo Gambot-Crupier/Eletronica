@@ -176,8 +176,6 @@ def reconheceCartas():
     return nome
 
 def entregaCartas(salvaPosicao,PosicaoDosJogadores):
-
-
     cam = cv2.VideoCapture(0)
     ret, image = cam.read()
     NumerodePassosParaPosicionar = 200
@@ -188,23 +186,23 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     k = 1
     informacoesJogadores = []
 
-    for x in range (0, NumerodeJogadores): #Cria matriz para enviar dados
+    for x in range (NumerodeJogadores): #Cria matriz para enviar dados
         informacoesJogadores.append(['','','','',''])
 
-    for x in range (0, NumerodeJogadores): #Cria matriz para enviar dados
+    for x in range (NumerodeJogadores): #Cria matriz para enviar dados
         informacoesJogadores[x][0] = PosicaoDosJogadores[x]
-    nome = []
+    nome = ['','']
     for i in range(NumerodeJogadores*2):
-        for p in range((salvaPosicao[j+1])): #GIRA MOTOR ATE A PESSOA
+        print(j)
+        for p in range(0,salvaPosicao[j]): #GIRA MOTOR ATE A PESSOA
             pulso()
         for q in range(NumerodePassosParaPosicionar):  #POSICIONA CARTA PARA FOTO   
             pulso()
         cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
-        ret, image = cam.read()   
-        
+        ret, image = cam.read()
         nome =  reconheceCartas() #RECONHECE A CARTA
-        for q in range(2):
-            informacoesJogadores[j][k+q] =  nome[q]
+        for m in range(2):
+            informacoesJogadores[j][k+m] =  nome[m]
         for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR 
             pulso()
 
@@ -214,12 +212,13 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
             trocadeJogador = 0
             j = j + 1
             k = 1
+            
+    print(informacoesJogadores)
    #RETORNA PARA POSICAO ORIGINAL 
     somadospassos = 0    
 
-    for i in range(NumerodeJogadores+1):
+    for i in range(NumerodeJogadores):
         somadospassos = somadospassos + salvaPosicao[i]
-
     GPIO.output(18,False)
     for i in range(somadospassos):        
         pulso();
@@ -228,7 +227,7 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     #ENTREGA 3 CARTAS NA MESA
 
     informacoesMesaRiver = []
-
+    GPIO.output(18,True)
     for i in range(3):
         if i == 0:
             for p in range((salvaPosicao[0])): #GIRA MOTOR ATE A PRIMEIRA PESSOA
@@ -250,12 +249,12 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     #ENVIA DADOS PARA O SERVIDOR
         #A MATRIZ informacoesJogadores está da seguinte forma [id_jogador, naipe1,valor1,naipe2,valor2]
         #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1,naipe2,valor2,naipe3,valor3]
-
+    print(informacoesMesaRiver)
 
     #ENTREGA 1 CARTAS NA MESA
 
     informacoesMesaTurn = []
-    for p in range(200): #GIRA MOTOR ATE A PRIMEIRA PESSOA
+    for p in range(200):
         pulso()
 
     for q in range(NumerodePassosParaPosicionar):  #POSICIONA CARTA PARA FOTO 
@@ -271,12 +270,12 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     #ENVIA DADOS PARA O SERVIDOR
 
         #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1]
-
+    print(informacoesMesaTurn)
 
     #ENTREGA 1 CARTAS NA MESA
 
     informacoesMesaFlop = []
-    for p in range(200): #GIRA MOTOR ATE A PRIMEIRA PESSOA
+    for p in range(200):
         pulso()
 
     for q in range(NumerodePassosParaPosicionar):  #POSICIONA CARTA PARA FOTO 
@@ -288,10 +287,20 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
         
     for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
         pulso()
-
+    print(informacoesMesaFlop)
     #ENVIA DADOS PARA O SERVIDOR
 
         #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1]
+    
+    #RETORNA PARA POSICAO ORIGINAL
+    GPIO.output(18,False)
+    for p in range(5):
+        if i == 0:
+            for p in range((salvaPosicao[0])): #GIRA MOTOR ATE A PRIMEIRA PESSOA
+                pulso()
+        else:
+            for p in range(200): #GIRA MOTOR PARA DISPOR CARTAS NA MESA
+                pulso()
 
 
 def jogoContinua():
