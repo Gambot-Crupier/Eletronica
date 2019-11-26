@@ -31,7 +31,7 @@ def enviarmesa(rodada, naipe1, valor1, naipe2, valor2, naipe3, valor3):
 
 def ler():
 
-	r = requests.get('http://echo.jsontest.com/id_jogador/-1') #Colocar o URL da galera de software aqui
+	r = requests.get('https://api.myjson.com/bins/11yt1i') #Colocar o URL da galera de software aqui
 
 	d = r.json()
 
@@ -42,24 +42,31 @@ def ler():
 
 
 
-#flag = ler()
 
+
+#flag = ler()
 #print(flag)
 
+for x in range(10000):
+
+	flag = ler()
+	print(flag)
+	if flag == "TRUE":
+		break
+
+
 id_jogadores = ['1','2','3']
-naipes1 = ['copas','espadas','paus']
-naipes2 = ['paus','ouros','copas']
-valores1 = ['Q','2','6']
-valores2 = ['K','A','10']
+naipes1 = ['h','s','c']
+naipes2 = ['c','d','h']
+valores1 = ['q','2','6']
+valores2 = ['k','a','10']
 
 
 
-enviarmao(3, id_jogadores, naipes1, valores1, naipes2, valores2)
+#enviarmao(3, id_jogadores, naipes1, valores1, naipes2, valores2)
 
 
-enviarmesa(1, 'ouro', 'paus', 'copas', 'A', '2', '3')
+#enviarmesa(1, 'ouro', 'paus', 'copas', 'A', '2', '3')
 
 
-enviarmesa(3, 'copas', 'espadas', 'ouro', 'A', '2', '3')
-
-
+#enviarmesa(3, 'copas', 'espadas', 'ouro', 'A', '2', '3')
