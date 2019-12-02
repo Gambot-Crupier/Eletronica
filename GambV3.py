@@ -45,7 +45,7 @@ pos_stp     = 38    # Posicionador Pino Step
 
 NumerodeJogadores = 4
 NumerodePassos = 9520
-NumerodePassosElevador = 2800
+#NumerodePassosElevador = 2800
 
             ########## VARIAVEIS ##########
 
@@ -80,7 +80,8 @@ GPIO.setup(base_ms3, GPIO.OUT)
 
 
 ## SETUP DOS GPIOS 
-# GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(7, GPIO.IN, pull_up_down = GPIO.PUD_DOWN) #PUSHBUTTON REEMBARALHAR
+GPIO.setup(13, GPIO.OUT) #LED DE INFORMAÇÃO
 # 
 # ##SETUP REDE NEURAL
 config = ConfigProto()
@@ -106,6 +107,36 @@ GPIO.output(pos_stp, GPIO.LOW)
 GPIO.output(pos_dir, GPIO.LOW)
 
             ########## FUNÇÕES ##########
+
+def ligaLED():
+    GPIO.output(13, GPIO.HIGH)
+    time.sleep(0.01)
+    GPIO.output(13, GPIO.LOW)
+
+def Reembaralhar():
+    pushbutton = GPIO.input(7)
+    while pushbutton == 0:
+        pushbutton = GPIO.input(7)
+    temporizador = 0
+    while pushbutton == 1:
+        if temporizador == 1500:
+            break
+        else:
+            pushbutton = GPIO.input(7)
+            temporizador += 1
+            time.sleep(0.001) 
+    if temporizador < 1500:
+        Elevador(sobe, 2000)
+        while pushbutton == 0:
+            null = 0#TRAVA O CÓDIGO
+            pushbutton = GPIO.input(7)
+        print("reembaralhar")
+        Elevador(desce,2000) 
+        Embaralhador()
+        Reembaralhar()
+    else:
+        null = 0
+        print("continua")
 
 def enviarmesaFlop(matriz):
     
@@ -168,7 +199,8 @@ def Embaralhador(): # 1º ESTÁGIO DE EMBARALHAMENTO
     GPIO.output(emb_1, False)
     GPIO.output(emb_2, False)
     
-def Elevador(direcao): # CONTROLE DO ELEVADOR E REDISTRIBUIDOR
+    
+def Elevador(direcao,NumerodePassosElevador): # CONTROLE DO ELEVADOR E REDISTRIBUIDOR
 
     GPIO.output(elev_ena, GPIO.LOW)  
     GPIO.output(elev_dir, direcao)
@@ -345,12 +377,11 @@ def reconheceCartas():
 def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     cam = cv2.VideoCapture(0)
     ret, image = cam.read()
-    NumerodePassosParaPosicionar = 200
-    NumerodePassosParaLancar = 100
     GPIO.output(base_dir,GPIO.HIGH)
     trocadeJogador = 0
     j = 0
     k = 1
+    flaggiro = 0
     informacoesJogadores = []
 
     for x in range (NumerodeJogadores): #Cria matriz para enviar dados
@@ -360,21 +391,22 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
         informacoesJogadores[x][0] = PosicaoDosJogadores[x]
     nome = ['','']
     for i in range(NumerodeJogadores*2):
-        print(j)
-        for p in range(0,salvaPosicao[j]): #GIRA MOTOR ATE A PESSOA
-            pulso(base_stp)
-        for q in range(NumerodePassosParaPosicionar):  #POSICIONA CARTA PARA FOTO   
-            pulso(pos_stp)
+        if(flaggiro == 0):
+            for p in range(0,salvaPosicao[j]): #GIRA MOTOR ATE A PESSOA
+                pulso(base_stp)
+            flaggiro = 1
+        Posicionador(frente)
         #cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
         #ret, image = cam.read()
         nome =  reconheceCartas() #RECONHECE A CARTA
         for m in range(2):
             informacoesJogadores[j][k+m] =  nome[m]
-        for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR 
-            pulso(pos_stp)
+#        for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR 
+#            pulso(pos_stp)
         trocadeJogador = trocadeJogador + 1
         k = k + 2
         if trocadeJogador == 2:
+            flaggiro = 0
             trocadeJogador = 0
             j = j + 1
             k = 1
@@ -394,7 +426,7 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
 
     #ENTREGA 3 CARTAS NA MESA
 
-    informacoesMesaRiver = []
+    informacoesMesaFlop = []
     GPIO.output(base_dir,GPIO.HIGH)
     for i in range(3):
         if i == 0:
@@ -404,36 +436,34 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
             for p in range(200): #GIRA MOTOR PARA DISPOR CARTAS NA MESA
                 pulso(base_stp)
 
-        for q in range(NumerodePassosParaPosicionar):  #POSICIONA CARTA PARA FOTO 
-            pulso(pos_stp)
+        Posicionador(frente)
 
         #cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
         #ret, image = cam.read()           
-        informacoesMesaRiver.append(reconheceCartas()) #RECONHECE A CARTA
+        informacoesMesaFlop.append(reconheceCartas()) #RECONHECE A CARTA
             
-        for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
-            pulso(pos_stp)
+#         for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
+#             pulso(pos_stp)
         
     #ENVIA DADOS PARA O SERVIDOR
         #A MATRIZ informacoesJogadores está da seguinte forma [id_jogador, naipe1,valor1,naipe2,valor2]
         #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1,naipe2,valor2,naipe3,valor3]
-    print(informacoesMesaRiver)
-    enviarmesaFlop(informacoesMesaRiver)
+    print(informacoesMesaFlop)
+    enviarmesaFlop(informacoesMesaFlop)
     #ENTREGA 1 CARTAS NA MESA
 
     informacoesMesaTurn = []
     for p in range(200):
         pulso(base_stp)
 
-    for q in range(NumerodePassosParaPosicionar):  #POSICIONA CARTA PARA FOTO 
-        pulso(pos_stp)
+    Posicionador(frente)
 
     #cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
     #ret, image = cam.read()           
     informacoesMesaTurn.append(reconheceCartas()) #RECONHECE A CARTA
         
-    for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
-        pulso(pos_stp)
+#     for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
+#         pulso(pos_stp)
 
     #ENVIA DADOS PARA O SERVIDOR
 
@@ -442,21 +472,20 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     enviarmesaRT(informacoesMesaTurn)
     #ENTREGA 1 CARTAS NA MESA
 
-    informacoesMesaFlop = []
+    informacoesMesaRiver = []
     for p in range(200):
         pulso(base_stp)
 
-    for q in range(NumerodePassosParaPosicionar):  #POSICIONA CARTA PARA FOTO 
-        pulso(pos_stp)
+    Posicionador(frente)
 
     #cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
     #ret, image = cam.read()           
-    informacoesMesaFlop.append(reconheceCartas()) #RECONHECE A CARTA
+    informacoesMesaRiver.append(reconheceCartas()) #RECONHECE A CARTA
         
-    for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
-        pulso(pos_stp)
-    print(informacoesMesaFlop)
-    enviarmesaRT(informacoesMesaFlop)
+#     for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
+#         pulso(pos_stp)
+    print(informacoesMesaRiver)
+    enviarmesaRT(informacoesMesaRiver)
     #ENVIA DADOS PARA O SERVIDOR
 
         #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1]
@@ -480,12 +509,8 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
 #        return False
 
 def embaralha():
-    NumerodeEmbaralhadas = 0
-
-    while NumerodeEmbaralhadas != 8:
-        if GPIO.input(10) == GPIO.HIGH:
-            NumerodeEmbaralhadas = NumerodeEmbaralhadas + 1
-
+    Embaralhador()
+    #Reembaralhar()
 
             ########## FUNÇÃO PRINCIPAL ##########
             
@@ -493,10 +518,7 @@ def embaralha():
 #ConectaThread.daemon = True
 #ConectaThread.start()
 
-#while checaconexao(): #TRAVA ATE SE CONECTAR A UMA REDE WIFI
-    #print(".")
-        
-#while(1):
+
     
     #CONEXÃO RASP COM WIFI
 
@@ -504,25 +526,40 @@ def embaralha():
         #sudo wpa_passphrase Nome_da_rede Senha_da_rede > /home/pi/Desktop/wpa.conf
         #sudo wpa_supplicant -Dnl80211 -iwlan0 -c/home/pi/Desktop/wpa.conf
     
-#    ConectaThread=threading.Thread(target=conectaNaRede)
-#    ConectaThread.daemon = True
-#    ConectaThread.start()
-#
-#    while checaconexao(): #TRAVA ATE SE CONECTAR A UMA REDE WIFI
-#        print(".")
-#     
-#     #while(flag == 0): # ESPERAR AUTORIZAÇÃO DO SERVIDOR
-#         
-#         
-#    reconhecePessoas()
-# 
-#    salvaPosicao = salvaPosicaodasPessoas()
-# 
-#    PosicaoDosJogadores = identificaPessoascomApp(salvaPosicao)
+#######################     CODIGO RECONHECE GALERA ###############################
 
-SalvaPosicao = [1,2,3,4]
-PosicaoDosJogadores = [1,2,3,4]
+while checaconexao(): #TRAVA ATE SE CONECTAR A UMA REDE WIFI
+    print(".")
+    
+reconhecePessoas()
+ 
+salvaPosicao = salvaPosicaodasPessoas()
+ 
+PosicaoDosJogadores = identificaPessoascomApp(salvaPosicao)
+
+
+
+#######################      CODIGO DA RODADA    ###################################
+Elevador(sobe,2800)
+
+embaralha()
+
 entregaCartas(SalvaPosicao,PosicaoDosJogadores)
+
+
+##FUNCAO QUE ESPERA FLAG DOS MALUCO DE SOFT INFORMANDO QUE A RODADA ACABOU
+
+
+
+
+Elevador(desce,2800)    
+################################################################################
+         
+         
+
+
+
+#entregaCartas(SalvaPosicao,PosicaoDosJogadores)
 #Elevador(sobe)
 #ler()
 #Embaralhador()
