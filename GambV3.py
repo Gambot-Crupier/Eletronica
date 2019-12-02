@@ -106,6 +106,21 @@ GPIO.output(pos_stp, GPIO.LOW)
 GPIO.output(pos_dir, GPIO.LOW)
 
             ########## FUNÇÕES ##########
+
+def enviarmesaFlop(matriz):
+    
+    payload = dict()
+    payload = {'player_id': 'mesa', 'cartas': [{ 'value' : matriz[0][1], 'suit' : matriz[0][0]}, {'value' : matriz[1][1], 'suit' : matriz[1][0]}, { 'value' : matriz[2][1], 'suit' : matriz[2][0]}] }
+    r = requests.post("http://httpbin.org/post", data=json.dumps(payload)) #Colocar o URL da galera de software aqui
+    print(r.text) #pode apagar esse print
+
+def enviarmesaRT(matriz):
+    
+    payload = dict()
+    payload = {'player_id': 'mesa', 'cartas': [{ 'value' : matriz[0][1], 'suit' : matriz[0][0]}] }
+    r = requests.post("http://httpbin.org/post", data=json.dumps(payload)) #Colocar o URL da galera de software aqui
+    print(r.text) #pode apagar esse print
+    
 def enviarmao(matriz):
     payload = {'num_players' : NumerodeJogadores}
     payload = [dict() for x in range(NumerodeJogadores)]
@@ -398,12 +413,12 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
             
         for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
             pulso(pos_stp)
-
+        
     #ENVIA DADOS PARA O SERVIDOR
         #A MATRIZ informacoesJogadores está da seguinte forma [id_jogador, naipe1,valor1,naipe2,valor2]
         #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1,naipe2,valor2,naipe3,valor3]
     print(informacoesMesaRiver)
-
+    enviarmesaFlop(informacoesMesaRiver)
     #ENTREGA 1 CARTAS NA MESA
 
     informacoesMesaTurn = []
@@ -424,7 +439,7 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
 
         #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1]
     print(informacoesMesaTurn)
-
+    enviarmesaRT(informacoesMesaTurn)
     #ENTREGA 1 CARTAS NA MESA
 
     informacoesMesaFlop = []
@@ -441,6 +456,7 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
         pulso(pos_stp)
     print(informacoesMesaFlop)
+    enviarmesaRT(informacoesMesaFlop)
     #ENVIA DADOS PARA O SERVIDOR
 
         #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1]
