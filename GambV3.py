@@ -18,8 +18,9 @@ frente = False
 tras = True
 desce = True
 sobe = False
-            ########## CONSTANTES ##########
 
+            ########## CONSTANTES ##########
+NumerodeJogadores = 2
 ### MOTORES DC ###
 
 emb_1       = 26     # Embaralhador Sentido Horário
@@ -43,7 +44,7 @@ pos_stp     = 38    # Posicionador Pino Step
 
 ### SETUP DOS JOGADORES E PASSOS ###
 
-NumerodeJogadores = 4
+
 NumerodePassos = 9520
 #NumerodePassosElevador = 2800
 
@@ -80,7 +81,7 @@ GPIO.setup(base_ms3, GPIO.OUT)
 
 
 ## SETUP DOS GPIOS 
-GPIO.setup(7, GPIO.IN, pull_up_down = GPIO.PUD_DOWN) #PUSHBUTTON REEMBARALHAR
+GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_UP) #PUSHBUTTON REEMBARALHAR
 GPIO.setup(13, GPIO.OUT) #LED DE INFORMAÇÃO
 # 
 # ##SETUP REDE NEURAL
@@ -108,67 +109,77 @@ GPIO.output(pos_dir, GPIO.LOW)
 
             ########## FUNÇÕES ##########
 
+def Lancador():
+    GPIO.output(dist, GPIO.HIGH)
+    time.sleep(1)
+    GPIO.output(dist, GPIO.LOW)
+
 def ligaLED():
     GPIO.output(13, GPIO.HIGH)
     time.sleep(0.01)
     GPIO.output(13, GPIO.LOW)
 
-def Reembaralhar():
-    pushbutton = GPIO.input(7)
-    while pushbutton == 0:
-        pushbutton = GPIO.input(7)
-    temporizador = 0
-    while pushbutton == 1:
-        if temporizador == 1500:
-            break
-        else:
-            pushbutton = GPIO.input(7)
-            temporizador += 1
-            time.sleep(0.001) 
-    if temporizador < 1500:
-        Elevador(sobe, 2000)
-        while pushbutton == 0:
-            null = 0#TRAVA O CÓDIGO
-            pushbutton = GPIO.input(7)
-        print("reembaralhar")
-        Elevador(desce,2000) 
-        Embaralhador()
-        Reembaralhar()
-    else:
-        null = 0
-        print("continua")
+
+        
+def getContinueStart():
+    r = requests.get('https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/get_continue') #Colocar o URL da galera de software aqui
+    while r.status_code != 200:
+        print('Não foi 200, foi ' + str(r.status_code))
+        r = requests.get('https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/get_continue')
+    json = r.json()
+    x = json['continue']
+    return(x)
+
+
+
+def postContinueStop():
+    
+    payload = {"continue": 2}
+    r = requests.post("https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/post_continue", json = payload,headers = {'Accept': 'application/json', 'content-type' : 'application/json'}) #Colocar o URL da galera de software aqui
+    print(r.text) #pode apagar esse print
+
+
+def postplayerid():
+    
+    payload = {"player_id": -1}
+    r = requests.post("https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/post_player_id", json = payload,headers = {'Accept': 'application/json', 'content-type' : 'application/json'}) #Colocar o URL da galera de software aqui
+    print(r.text) #pode apagar esse print
 
 def enviarmesaFlop(matriz):
     
     payload = dict()
-    payload = {'player_id': 'mesa', 'cartas': [{ 'value' : matriz[0][1], 'suit' : matriz[0][0]}, {'value' : matriz[1][1], 'suit' : matriz[1][0]}, { 'value' : matriz[2][1], 'suit' : matriz[2][0]}] }
-    r = requests.post("http://httpbin.org/post", data=json.dumps(payload)) #Colocar o URL da galera de software aqui
+    payload = {'cards': [{ 'value' : str(matriz[0][1]), 'suit' : str(matriz[0][0])}, {'value' : str(matriz[1][1]), 'suit' : str(matriz[1][0])}, { 'value' : str(matriz[2][1]), 'suit' : str(matriz[2][0])}] }
+    r = requests.post("https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/post_table_cards", json = payload) #Colocar o URL da galera de software aqui
     print(r.text) #pode apagar esse print
 
+    
 def enviarmesaRT(matriz):
     
     payload = dict()
-    payload = {'player_id': 'mesa', 'cartas': [{ 'value' : matriz[0][1], 'suit' : matriz[0][0]}] }
-    r = requests.post("http://httpbin.org/post", data=json.dumps(payload)) #Colocar o URL da galera de software aqui
+    payload = {'cards': [{ 'value' : str(matriz[0][1]), 'suit' : str(matriz[0][0])}] }
+    r = requests.post("https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/post_table_cards", json = payload) #Colocar o URL da galera de software aqui
     print(r.text) #pode apagar esse print
     
 def enviarmao(matriz):
-    payload = {'num_players' : NumerodeJogadores}
-    payload = [dict() for x in range(NumerodeJogadores)]
+    payload = []
     for x in range(NumerodeJogadores):
-        payload[x] = {'player_id': matriz[x][0], 'cartas': [{ 'value' : matriz[x][2], 'suit' : matriz[x][1]}, {'value' : matriz[x][4], 'suit' : matriz[x][3]}] }
-    r = requests.post("http://httpbin.org/post", data=json.dumps(payload)) #Colocar o URL da galera de software aqui
+        payload.append({'player_id': int(matriz[x][0]), 'cards': [{ 'value' : str(matriz[x][2]), 'suit' : str(matriz[x][1])}, {'value' : str(matriz[x][4]), 'suit' : str(matriz[x][3])}] })
+    print(payload)
+    r = requests.post("https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/post_hands", json = payload,headers = {'Accept': 'application/json', 'content-type' : 'application/json'}) #Colocar o URL da galera de software aqui
     print(r.text) #pode apagar esse print
 
+def lerNumerodeJogadores():
+    r = requests.get('https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/get_total_players_in_game') #Colocar o URL da galera de software aqui
+    d = r.json()
+    x = d['qtd_players']
+    return(x)
 
-def ler():
-    x = ""
-    while x != 'TRUE':
-        r = requests.get('https://api.myjson.com/bins/11yt1i') #Colocar o URL da galera de software aqui
-        d = r.json()
-        x = d['id_jogador']
-        print(x)
-
+def lerIdJogador():
+    r = requests.get('https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/get_player_id') #Colocar o URL da galera de software aqui
+    d = r.json()
+    x = d['player_id']
+    return(x)
+        
     
 def pulso(pino):
     GPIO.output(pino,GPIO.HIGH)
@@ -177,7 +188,7 @@ def pulso(pino):
     time.sleep(0.001)
     
 def Embaralhador(): # 1º ESTÁGIO DE EMBARALHAMENTO
-    for i in range(6):
+    for i in range(5):
         for i in range(150):
             GPIO.output(emb_1, True)
             GPIO.output(emb_2, False)
@@ -217,13 +228,17 @@ def Posicionador(direcao):  # POSICIONADOR DA CARTA SOBRE A CÂMERA
     
     GPIO.output(pos_ena, GPIO.LOW)
     GPIO.output(pos_dir, direcao)
-    for i in range(2000):  #1340 #2048 #708      
+    for i in range(2048):  #1340 #2048 #708      
         pulso(pos_stp);
     GPIO.output(pos_ena, GPIO.HIGH)
 
 def Pescocinho():  # POSICIONADOR DA CARTA SOBRE A CÂMERA
     GPIO.output(base_ms3, GPIO.HIGH)
     GPIO.output(base_ena, GPIO.LOW)
+    GPIO.output(base_dir, GPIO.LOW)
+    for i in range(500):  #1340 #2048 #708      
+        pulso(base_stp);
+    GPIO.output(base_dir, GPIO.HIGH)
     for i in range(500):  #1340 #2048 #708      
         pulso(base_stp);
     GPIO.output(base_ena, GPIO.HIGH)
@@ -251,9 +266,10 @@ def checaconexao():
     
 
 def reconhecePessoas():
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(1)
     ret, image = cam.read()
     p = 0
+    GPIO.output(13, GPIO.HIGH)
     if ret:
         GPIO.output(base_dir,GPIO.HIGH)
         for i in range(NumerodePassos):
@@ -266,6 +282,7 @@ def reconhecePessoas():
                 p=0
             p=p+1
     cam.release()
+    GPIO.output(13, GPIO.LOw)
     
 def salvaPosicaodasPessoas():
     q =160
@@ -294,35 +311,56 @@ def salvaPosicaodasPessoas():
     return salvaPosicao
 
 def identificaPessoascomApp(salvaPosicao):
+    PosicaoDosJogadores = []
+    print("ESTA IDENTIFICANDO AS PESSOAS")
     GPIO.output(base_dir,GPIO.LOW)
-    for i in range(NumerodePassos):
+    for i in range(10):
         pulso(base_stp) 
-    time.sleep(1)
-
+    lejson = ""
     ## onde entra o código de conexão com  galera de soft
     GPIO.output(base_dir,GPIO.HIGH)
-    for i in range(NumerodeJogadores):
-        for p in range((salvaPosicao[i+1])):
+    for i in range(len(salvaPosicao)):
+        for p in range((salvaPosicao[i])):
             pulso(base_stp)
+        print("GIROU ATE O PRIMEIRO JOGADOR")
+        lejson = lerIdJogador()
+        while lejson == "-1":
+            GPIO.output(13, GPIO.HIGH)
+            print("fica parado")
+            lejson = lerIdJogador()
+        if lejson == "-5":
+            postplayerid()
+            print("faz nada")
+            GPIO.output(13, GPIO.LOW)
+        elif lejson == "-10":
+            postplayerid()
+            print("break")
+            GPIO.output(13, GPIO.LOW)
+            break
+        else:
+            PosicaoDosJogadores.append(lejson)
+            print(lejson)
+            print(PosicaoDosJogadores)
+            postplayerid()  #ENVIA PARA SERVIDOR QUE FOI LIDO
+            print("caiu aqui")
 
-        time.sleep(2) #NO LUGAR DESSE TIME.SLEEP, TEM QUE FICAR UM LOOPING QUE TRAVA TUDO ATÉ A PESSOA SE IDENTIFICAR
     
-
     somadospassos = 0    
 
-    for i in range(NumerodeJogadores+1):
+    for i in range(1):
         somadospassos = somadospassos + salvaPosicao[i]
-        
-    for i in range(NumerodePassos - somadospassos):        
+        print(somadospassos)
+    for i in range(400 - somadospassos):        
         pulso(base_stp);
-        
-    time.sleep(1)    
+    print("1")       
     GPIO.output(base_dir,GPIO.LOW)
-    for i in range(NumerodePassos):        
+    for i in range(1):        
         pulso(base_stp);
-    time.sleep(1)
-
-
+    print("2") 
+    while lejson != "-10": #ESPERA FINALIZAR O RECONHECIMENTO DA GALERA
+        print("Esperando resposta do servidor")
+        lejson = lerIdJogador()
+    print("cabou") 
     return PosicaoDosJogadores
 
 def reconheceCartas():
@@ -347,7 +385,7 @@ def reconheceCartas():
     predicao = modelNumero.predict(image)[0]
     #IDENTIFICA NUMERO
     if np.argmax(predicao) == 1:
-        nome.append("a")
+        nome.append("A")
     if np.argmax(predicao) == 2:
         nome.append("2")
     if np.argmax(predicao) == 3:
@@ -367,11 +405,11 @@ def reconheceCartas():
     if np.argmax(predicao) == 10:
         nome.append("10")
     if np.argmax(predicao) == 11:
-        nome.append("j")
+        nome.append("J")
     if np.argmax(predicao) == 12:
-        nome.append("q")
+        nome.append("Q")
     if np.argmax(predicao) == 13:
-        nome.append("k")
+        nome.append("K")
     return nome
 
 def entregaCartas(salvaPosicao,PosicaoDosJogadores):
@@ -384,13 +422,13 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     flaggiro = 0
     informacoesJogadores = []
 
-    for x in range (NumerodeJogadores): #Cria matriz para enviar dados
+    for x in range (len(PosicaoDosJogadores)): #Cria matriz para enviar dados
         informacoesJogadores.append(['','','','',''])
 
-    for x in range (NumerodeJogadores): #Cria matriz para enviar dados
+    for x in range (len(PosicaoDosJogadores)): #Cria matriz para enviar dados
         informacoesJogadores[x][0] = PosicaoDosJogadores[x]
     nome = ['','']
-    for i in range(NumerodeJogadores*2):
+    for i in range(len(PosicaoDosJogadores)*2):
         if(flaggiro == 0):
             for p in range(0,salvaPosicao[j]): #GIRA MOTOR ATE A PESSOA
                 pulso(base_stp)
@@ -398,7 +436,7 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
         Posicionador(frente)
         #cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
         #ret, image = cam.read()
-        nome =  reconheceCartas() #RECONHECE A CARTA
+        nome =  reconheceCartas()
         for m in range(2):
             informacoesJogadores[j][k+m] =  nome[m]
 #        for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR 
@@ -416,13 +454,23 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     print(informacoesJogadores)
    #RETORNA PARA POSICAO ORIGINAL 
     somadospassos = 0    
-
-    for i in range(NumerodeJogadores):
+    for i in range(len(PosicaoDosJogadores)):
         somadospassos = somadospassos + salvaPosicao[i]
     GPIO.output(base_dir,GPIO.LOW)
     for i in range(somadospassos):        
         pulso(base_stp);
-    time.sleep(1)
+    
+    lejson = ""
+    while lejson == "2":
+        print("fica parado")
+        lejson = getContinueStart()
+    if lejson == "3":
+        print("entrou aqui")
+        lejson = getContinueStart()
+    if lejson == "4":
+        lejson = getContinueStart()
+        return()
+        
 
     #ENTREGA 3 CARTAS NA MESA
 
@@ -441,13 +489,7 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
         #cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
         #ret, image = cam.read()           
         informacoesMesaFlop.append(reconheceCartas()) #RECONHECE A CARTA
-            
-#         for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
-#             pulso(pos_stp)
-        
-    #ENVIA DADOS PARA O SERVIDOR
-        #A MATRIZ informacoesJogadores está da seguinte forma [id_jogador, naipe1,valor1,naipe2,valor2]
-        #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1,naipe2,valor2,naipe3,valor3]
+
     print(informacoesMesaFlop)
     enviarmesaFlop(informacoesMesaFlop)
     #ENTREGA 1 CARTAS NA MESA
@@ -472,6 +514,17 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
     enviarmesaRT(informacoesMesaTurn)
     #ENTREGA 1 CARTAS NA MESA
 
+
+    while lejson == "2":
+        print("fica parado")
+        lejson = getContinueStart()
+    if lejson == "3":
+        lejson = getContinueStart()
+    if lejson == "4":
+        lejson = getContinueStart()
+        return()
+    
+    
     informacoesMesaRiver = []
     for p in range(200):
         pulso(base_stp)
@@ -486,6 +539,15 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
 #         pulso(pos_stp)
     print(informacoesMesaRiver)
     enviarmesaRT(informacoesMesaRiver)
+
+    while lejson == "2":
+        print("fica parado")
+        lejson = getContinueStart()
+    if lejson == "3":
+        lejson = getContinueStart()
+    if lejson == "4":
+        lejson = getContinueStart()
+        return()
     #ENVIA DADOS PARA O SERVIDOR
 
         #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1]
@@ -501,76 +563,80 @@ def entregaCartas(salvaPosicao,PosicaoDosJogadores):
                 pulso(base_stp)
 
 
-#def jogoContinua():
-#    #LE DADOS DO JSON
-#    if FlagJogoContinua == 1:
-#        return True
-#    else:
-#        return False
-
 def embaralha():
+    print("EMBARALHA 1")
     Embaralhador()
-    #Reembaralhar()
-
+    pushbutton = GPIO.input(12)
+    Elevador(sobe,1500)
+    while pushbutton == 1:
+        GPIO.output(13, GPIO.HIGH)
+        time.sleep(0.2)
+        pushbutton = GPIO.input(12)
+        print("travado")
+    GPIO.output(13, GPIO.LOW)
+    print("EMBARALHA 2")
+    Elevador(desce,1500)
+    Embaralhador()
+    Elevador(sobe,1500)
+    time.sleep(2)
+    pushbutton = GPIO.input(12)
+    while pushbutton == 1:
+        GPIO.output(13, GPIO.HIGH)
+        time.sleep(0.2)
+        pushbutton = GPIO.input(12)
+        print("travado")
+    GPIO.output(13, GPIO.LOW)
+    print("EMBARALHA 3")
+    Elevador(desce,1500)
+    Embaralhador()
+    Elevador(desce,1800)
+    
+    
+    
             ########## FUNÇÃO PRINCIPAL ##########
             
 #ConectaThread=threading.Thread(target=conectaNaRede)
 #ConectaThread.daemon = True
 #ConectaThread.start()
 
-
-    
+#embaralha()    
     #CONEXÃO RASP COM WIFI
 
     #O QUE DEVE SER ENVIADO PELA GALERA DE SOFT POR BT
         #sudo wpa_passphrase Nome_da_rede Senha_da_rede > /home/pi/Desktop/wpa.conf
         #sudo wpa_supplicant -Dnl80211 -iwlan0 -c/home/pi/Desktop/wpa.conf
     
-#######################     CODIGO RECONHECE GALERA ###############################
 
+#######################     CODIGO RECONHECE GALERA ###############################
 while checaconexao(): #TRAVA ATE SE CONECTAR A UMA REDE WIFI
     print(".")
-    
-reconhecePessoas()
- 
-salvaPosicao = salvaPosicaodasPessoas()
- 
-PosicaoDosJogadores = identificaPessoascomApp(salvaPosicao)
-
-
+getContinueStart()
+NumerodeJogadores = lerNumerodeJogadores()
+print(NumerodeJogadores)
+# reconhecePessoas()
+#salvaPosicao = salvaPosicaodasPessoas()
+SalvaPosicao = [1,2,3]
+PosicaoDosJogadores = identificaPessoascomApp(SalvaPosicao)
 
 #######################      CODIGO DA RODADA    ###################################
-Elevador(sobe,2800)
-
-embaralha()
-
-entregaCartas(SalvaPosicao,PosicaoDosJogadores)
+while(1):
+    #Elevador(sobe,2500)
+    #embaralha()
+    entregaCartas(SalvaPosicao,PosicaoDosJogadores)
 
 
 ##FUNCAO QUE ESPERA FLAG DOS MALUCO DE SOFT INFORMANDO QUE A RODADA ACABOU
 
-
-
-
-Elevador(desce,2800)    
+#Elevador(desce,2800)    
 ################################################################################
-         
-         
+    
+    
+###ROTINA FUNCIONA SEPARADO###
 
+# Elevador(sobe,1500)
+# Pescocinho()
+# embaralha()
+# Elevador(sobe,2200) 
+# Posicionador(frente)
 
-
-#entregaCartas(SalvaPosicao,PosicaoDosJogadores)
-#Elevador(sobe)
-#ler()
-#Embaralhador()
-
-#Elevador(desce)
-
-#Posicionador(frente)
-#Posicionador(tras) 
-#Elevador(sobe)
-#Pescocinho()
-  
-        
-    #flag = 0
 
