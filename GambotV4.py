@@ -355,9 +355,7 @@ def identificaPessoascomApp(salvaPosicao):
             pulso(base_stp)
             NumPassos = NumPassos + 1
         print("GIROU ATE O JOGADOR")
-        time.sleep(2) #APAGARDPS
-        lejson = 8  #APAGARDPS
-        #lejson = lerIdJogador() DESCOMENTAR
+        lejson = lerIdJogador() DESCOMENTAR
         while lejson == "-1":
             GPIO.output(10, GPIO.HIGH)
             print("fica parado")
@@ -378,7 +376,7 @@ def identificaPessoascomApp(salvaPosicao):
             print(PosicaoDosJogadores[0])
             print(PosicaoDosJogadores[1])
             NumPassos = 0
-            #postplayerid()  #ENVIA PARA SERVIDOR QUE FOI LIDO
+            postplayerid()  #ENVIA PARA SERVIDOR QUE FOI LIDO
             print("caiu aqui")
 
     
@@ -391,9 +389,9 @@ def identificaPessoascomApp(salvaPosicao):
         pulso(base_stp);
     print("1")       
     GPIO.output(base_dir,GPIO.LOW)
-#     while lejson != "-10": #ESPERA FINALIZAR O RECONHECIMENTO DA GALERA
-#         print("Esperando resposta do servidor")
-#         lejson = lerIdJogador()
+    while lejson != "-10": #ESPERA FINALIZAR O RECONHECIMENTO DA GALERA
+        print("Esperando resposta do servidor")
+        lejson = lerIdJogador()
     print("cabou")
     
     for i in range(NumerodePassos):
@@ -525,9 +523,9 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
             j = j + 1
             k = 1
             
-    #enviarmao(informacoesJogadores)
-    #postContinueStop()
-    #print(informacoesJogadores)
+    enviarmao(informacoesJogadores)
+    postContinueStop()
+    print(informacoesJogadores)
    #RETORNA PARA POSICAO ORIGINAL 
     somadospassos = 0    
     for i in range(len(PosicaoDosJogadores)):
@@ -537,7 +535,7 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
         pulso(base_stp);
     
     lejson = ""
-    #lejson = getContinueStart()
+    lejson = getContinueStart()
     while lejson == "2":
         print("fica parado")
         lejson = getContinueStart()
@@ -569,13 +567,13 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
 
 
 
-        #cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
-        #ret, image = cam.read()
+        cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
+        ret, image = cam.read()
         informacoesMesaFlop.append(reconheceCartas())
         enviarmesaRT(informacoesMesaFlop) #RECONHECE A CARTA
         informacoesMesaFlop = []
-   # print(informacoesMesaFlop)
-   # enviarmesaFlop(informacoesMesaFlop)
+    print(informacoesMesaFlop)
+    enviarmesaFlop(informacoesMesaFlop)
     #ENTREGA 1 CARTAS NA MESA
 
     informacoesMesaTurn = []
@@ -585,8 +583,8 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
     Posicionador(frente)
     Distribuidor()
 
-    #cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
-    #ret, image = cam.read()           
+    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
+    ret, image = cam.read()           
     informacoesMesaTurn.append(reconheceCartas()) #RECONHECE A CARTA
         
 #     for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
@@ -637,8 +635,8 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
     Posicionador(frente)
     Distribuidor()
 
-    #cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
-    #ret, image = cam.read()           
+    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
+    ret, image = cam.read()           
     informacoesMesaRiver.append(reconheceCartas()) #RECONHECE A CARTA
         
 #     for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
@@ -689,30 +687,28 @@ def embaralha():
     Elevador(desce,2500)
 
 
-            ########## FUNÇÃO PRINCIPAL ##########
-#reconhecePessoas()          
+            ########## FUNÇÃO PRINCIPAL ##########       
 #ConectaThread=threading.Thread(target=conectaNaRede)
 #ConectaThread.daemon = True
 #ConectaThread.start()  
     #CONEXÃO RASP COM WIFI
-mostrquereconhece()
+#mostrquereconhece()
     #O QUE DEVE SER ENVIADO PELA GALERA DE SOFT POR BT
         #sudo wpa_passphrase Nome_da_rede Senha_da_rede > /home/pi/Desktop/wpa.conf
         #sudo wpa_supplicant -Dnl80211 -iwlan0 -c/home/pi/Desktop/wpa.conf
 
 
 # #######################     CODIGO RECONHECE GALERA ###############################
-#while checaconexao(): #TRAVA ATE SE CONECTAR A UMA REDE WIFI
-#    print(".")
-#getContinueStart()
-#NumerodeJogadores = lerNumerodeJogadores()
-#NumerodeJogadores = 3
-#postContinueStop()
-#reconhecePessoas()
-#SalvaPosicao = salvaPosicaodasPessoas()
-#PosicaoDosJogadores = identificaPessoascomApp(SalvaPosicao)
+while checaconexao(): #TRAVA ATE SE CONECTAR A UMA REDE WIFI
+    print(".")
+getContinueStart()
+NumerodeJogadores = lerNumerodeJogadores()
+postContinueStop()
+reconhecePessoas()
+SalvaPosicao = salvaPosicaodasPessoas()
+PosicaoDosJogadores = identificaPessoascomApp(SalvaPosicao)
 # 
 # #######################      CODIGO DA RODADA    ###################################
-#while(1):
-#    embaralha()
-#    entregaCartas(PosicaoDosJogadores)     
+while(1):
+    embaralha()
+    entregaCartas(PosicaoDosJogadores)     
