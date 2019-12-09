@@ -22,7 +22,6 @@ sobe = True
 
 botao = 37
             ########## CONSTANTES ##########
-NumerodeJogadores = 2
 ### MOTORES DC ###
 
 StepPinForward=13
@@ -49,7 +48,6 @@ pos_stp     = 38    # Posicionador Pino Step
 
 
 NumerodePassos = 9520
-#NumerodePassosElevador = 2800
 
             ########## VARIAVEIS ##########
 
@@ -355,7 +353,7 @@ def identificaPessoascomApp(salvaPosicao):
             pulso(base_stp)
             NumPassos = NumPassos + 1
         print("GIROU ATE O JOGADOR")
-        lejson = lerIdJogador() DESCOMENTAR
+        lejson = lerIdJogador()
         while lejson == "-1":
             GPIO.output(10, GPIO.HIGH)
             print("fica parado")
@@ -512,8 +510,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
         nome =  reconheceCartas()
         for m in range(2):
             informacoesJogadores[j][k+m] =  nome[m]
-#        for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR 
-#            pulso(pos_stp)
         print(j)
         trocadeJogador = trocadeJogador + 1
         k = k + 2
@@ -564,9 +560,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
                 pulso(base_stp)
             Posicionador(frente)
             Distribuidor()
-
-
-
         cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
         ret, image = cam.read()
         informacoesMesaFlop.append(reconheceCartas())
@@ -586,9 +579,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
     cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
     ret, image = cam.read()           
     informacoesMesaTurn.append(reconheceCartas()) #RECONHECE A CARTA
-        
-#     for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
-#         pulso(pos_stp)
 
     #ENVIA DADOS PARA O SERVIDOR
     lejson = getContinueStart()
@@ -606,7 +596,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
         print(lejson)
         return()
     print(lejson)
-        #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1]
     print(informacoesMesaTurn)
     enviarmesaRT(informacoesMesaTurn)
     #ENTREGA 1 CARTAS NA MESA
@@ -639,8 +628,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
     ret, image = cam.read()           
     informacoesMesaRiver.append(reconheceCartas()) #RECONHECE A CARTA
         
-#     for q in range(NumerodePassosParaLancar):  #POSICIONA CARTA  PARA LANÇADOR
-#         pulso(pos_stp)
     print(informacoesMesaRiver)
     enviarmesaRT(informacoesMesaRiver)
 
@@ -692,7 +679,7 @@ def embaralha():
 #ConectaThread.daemon = True
 #ConectaThread.start()  
     #CONEXÃO RASP COM WIFI
-#mostrquereconhece()
+            
     #O QUE DEVE SER ENVIADO PELA GALERA DE SOFT POR BT
         #sudo wpa_passphrase Nome_da_rede Senha_da_rede > /home/pi/Desktop/wpa.conf
         #sudo wpa_supplicant -Dnl80211 -iwlan0 -c/home/pi/Desktop/wpa.conf
