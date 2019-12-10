@@ -341,6 +341,7 @@ def identificaPessoascomApp(salvaPosicao):
     PosicaoDosJogadores.append([])
     PosicaoDosJogadores.append([])
     print("ESTA IDENTIFICANDO AS PESSOAS")
+    postplayerid()
     GPIO.output(base_dir,GPIO.LOW)
     for i in range(NumerodePassos):
         pulso(base_stp) 
