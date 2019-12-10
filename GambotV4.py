@@ -164,9 +164,9 @@ def enviarmesaRT(matriz):
     r = requests.post("https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/post_table_cards", json = payload,headers = {'Accept': 'application/json', 'content-type' : 'application/json'}) #Colocar o URL da galera de software aqui
     print(r.text) #pode apagar esse print
     
-def enviarmao(matriz):
+def enviarmao(matriz,Num):
     payload = []
-    for x in range(NumerodeJogadores):
+    for x in range(Num):
         payload.append({'player_id': int(matriz[x][0]), 'cards': [{ 'value' : str(matriz[x][2]), 'suit' : str(matriz[x][1])}, {'value' : str(matriz[x][4]), 'suit' : str(matriz[x][3])}] })
     print(payload)
     r = requests.post("https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/post_hands", json = payload,headers = {'Accept': 'application/json', 'content-type' : 'application/json'}) #Colocar o URL da galera de software aqui
@@ -520,7 +520,7 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
             j = j + 1
             k = 1
             
-    enviarmao(informacoesJogadores)
+    enviarmao(informacoesJogadores,len(PosicaoDosJogadores))
     postContinueStop()
     print(informacoesJogadores)
    #RETORNA PARA POSICAO ORIGINAL 
