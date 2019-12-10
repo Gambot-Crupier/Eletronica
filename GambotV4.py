@@ -499,14 +499,15 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
             flaggiro = 1
         Posicionador(frente)
         Distribuidor()
-        cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO
+            
+        cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
         caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
         imagem = cv2.imread(caminhoImagem)
         cv2.imshow('imagem', imagem)
-        corte = imagem[80:316, 130:300]
-        cv2.imshow('imagemCortada', corte)
-        cv2.imwrite('carta.jpg', corte)        
+        corte = imagem[80:324,346:534]
+        cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)
         ret, image = cam.read()
+            
         nome =  reconheceCartas()
         for m in range(2):
             informacoesJogadores[j][k+m] =  nome[m]
@@ -560,8 +561,18 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
                 pulso(base_stp)
             Posicionador(frente)
             Distribuidor()
-        cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
+            
+            
+        cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
+        caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
+        imagem = cv2.imread(caminhoImagem)
+        cv2.imshow('imagem', imagem)
+        corte = imagem[80:324,346:534]
+        cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte) 
         ret, image = cam.read()
+            
+            
+            
         informacoesMesaFlop.append(reconheceCartas())
         enviarmesaRT(informacoesMesaFlop) #RECONHECE A CARTA
         informacoesMesaFlop = []
@@ -576,7 +587,12 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
     Posicionador(frente)
     Distribuidor()
 
-    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
+    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
+    caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
+    imagem = cv2.imread(caminhoImagem)
+    cv2.imshow('imagem', imagem)
+    corte = imagem[80:324,346:534]
+    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)
     ret, image = cam.read()           
     informacoesMesaTurn.append(reconheceCartas()) #RECONHECE A CARTA
 
@@ -624,8 +640,12 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
     Posicionador(frente)
     Distribuidor()
 
-    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,crop_img)  #TIRA FOTO                 
-    ret, image = cam.read()           
+    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
+    caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
+    imagem = cv2.imread(caminhoImagem)
+    cv2.imshow('imagem', imagem)
+    corte = imagem[80:324,346:534]
+    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)              
     informacoesMesaRiver.append(reconheceCartas()) #RECONHECE A CARTA
         
     print(informacoesMesaRiver)
