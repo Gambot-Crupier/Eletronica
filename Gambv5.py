@@ -544,9 +544,9 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
         postContinueStop()
         return()
         
-
+    
     #ENTREGA 3 CARTAS NA MESA
-
+    i = 0
     informacoesMesaFlop = []
     GPIO.output(base_dir,GPIO.HIGH)
     for i in range(3):
