@@ -457,7 +457,6 @@ def mostrquereconhece():
     cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
     caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
     imagem = cv2.imread(caminhoImagem)
-    cv2.imshow('imagem', imagem)
     corte = imagem[80:324,346:534]
     cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)
     reconheceCartas()
@@ -502,7 +501,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
         cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
         caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
         imagem = cv2.imread(caminhoImagem)
-        cv2.imshow('imagem', imagem)
         corte = imagem[80:324,346:534]
         cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)
         ret, image = cam.read()
@@ -557,7 +555,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
             cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
             caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
             imagem = cv2.imread(caminhoImagem)
-            cv2.imshow('imagem', imagem)
             corte = imagem[80:324,346:534]
             cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte) 
             ret, image = cam.read()
@@ -569,7 +566,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
             cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
             caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
             imagem = cv2.imread(caminhoImagem)
-            cv2.imshow('imagem', imagem)
             corte = imagem[80:324,346:534]
             cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)
             ret, image = cam.read()
@@ -609,7 +605,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
     cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
     caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
     imagem = cv2.imread(caminhoImagem)
-    cv2.imshow('imagem', imagem)
     corte = imagem[80:324,346:534]
     cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)
     ret, image = cam.read()           
@@ -654,7 +649,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
     cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
     caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
     imagem = cv2.imread(caminhoImagem)
-    cv2.imshow('imagem', imagem)
     corte = imagem[80:324,346:534]
     cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)
     ret, image = cam.read()
