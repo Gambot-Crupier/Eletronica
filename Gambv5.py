@@ -571,7 +571,8 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
             imagem = cv2.imread(caminhoImagem)
             cv2.imshow('imagem', imagem)
             corte = imagem[80:324,346:534]
-            cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte) 
+            cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)
+            ret, image = cam.read()
             Distribuidor()
         informacoesMesaFlop.append(reconheceCartas())
         enviarmesaRT(informacoesMesaFlop) #RECONHECE A CARTA
@@ -593,20 +594,18 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
         print(lejson)
         GPIO.output(base_dir,GPIO.LOW)
         for i in range(3):
-        if i == 0:
-            for p in range((salvaPosicao[0])): #GIRA MOTOR ATE A PRIMEIRA PESSOA
-                pulso(base_stp)
-        else:
-            for p in range(500): #GIRA MOTOR PARA DISPOR CARTAS NA MESA
-                pulso(base_stp)            
+            if i == 0:
+                for p in range((salvaPosicao[0])): #GIRA MOTOR ATE A PRIMEIRA PESSOA
+                    pulso(base_stp)
+            else:
+                for p in range(500): #GIRA MOTOR PARA DISPOR CARTAS NA MESA
+                    pulso(base_stp)            
         return()
     informacoesMesaTurn = []
     for p in range(500):
         pulso(base_stp)
 
     Posicionador(frente)
-    Distribuidor()
-
     cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
     caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
     imagem = cv2.imread(caminhoImagem)
@@ -615,6 +614,10 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
     cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)
     ret, image = cam.read()           
     informacoesMesaTurn.append(reconheceCartas()) #RECONHECE A CARTA
+            
+    Distribuidor()
+    print(informacoesMesaTurn)
+    enviarmesaRT(informacoesMesaTurn)
 
     #ENVIA DADOS PARA O SERVIDOR
     lejson = getContinueStart()
@@ -630,10 +633,15 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
         lejson = getContinueStart()
         postContinueStop()
         print(lejson)
+        for i in range(4):
+            if i == 0:
+                for p in range((salvaPosicao[0])): #GIRA MOTOR ATE A PRIMEIRA PESSOA
+                    pulso(base_stp)
+            else:
+                for p in range(500): #GIRA MOTOR PARA DISPOR CARTAS NA MESA
+                    pulso(base_stp)  
         return()
     print(lejson)
-    print(informacoesMesaTurn)
-    enviarmesaRT(informacoesMesaTurn)
     #ENTREGA 1 CARTAS NA MESA
 
     lejson = getContinueStart()
@@ -658,16 +666,15 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
         pulso(base_stp)
 
     Posicionador(frente)
-    Distribuidor()
-
     cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg' ,image)  #TIRA FOTO
     caminhoImagem = '/home/pi/Desktop/fotoCarta/carta.jpg'
     imagem = cv2.imread(caminhoImagem)
     cv2.imshow('imagem', imagem)
     corte = imagem[80:324,346:534]
-    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)              
+    cv2.imwrite('/home/pi/Desktop/fotoCarta/carta.jpg', corte)
+    ret, image = cam.read()
     informacoesMesaRiver.append(reconheceCartas()) #RECONHECE A CARTA
-        
+    Distribuidor()        
     print(informacoesMesaRiver)
     enviarmesaRT(informacoesMesaRiver)
 
