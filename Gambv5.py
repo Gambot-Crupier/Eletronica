@@ -633,6 +633,7 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
         lejson = getContinueStart()
         postContinueStop()
         print(lejson)
+        GPIO.output(base_dir,GPIO.LOW)
         for i in range(4):
             if i == 0:
                 for p in range((salvaPosicao[0])): #GIRA MOTOR ATE A PRIMEIRA PESSOA
