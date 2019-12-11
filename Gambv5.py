@@ -669,6 +669,12 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
                 pulso(base_stp)
 
 def embaralha():
+    while pushbutton == 1:
+        GPIO.output(10, GPIO.HIGH)
+        time.sleep(0.2)
+        pushbutton = GPIO.input(botao)
+        print("travado")
+    GPIO.output(10, GPIO.LOW)
     Elevador(sobe,2000)
     print("EMBARALHA 1")
     Embaralhador()
