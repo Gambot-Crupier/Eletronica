@@ -644,22 +644,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
         return()
     print(lejson)
     #ENTREGA 1 CARTAS NA MESA
-
-    lejson = getContinueStart()
-    while lejson == "2":
-        print("fica parado")
-        lejson = getContinueStart()
-        print(lejson)
-    if lejson == "3":
-        lejson = getContinueStart()
-        postContinueStop()
-        print(lejson)
-    if lejson == "4":
-        lejson = getContinueStart()
-        postContinueStop()
-        print(lejson)
-        return()
-    print(lejson)
     
     informacoesMesaRiver = []
     
@@ -681,9 +665,6 @@ def entregaCartas(PosicaoDosJogadoresMatriz):
 
     #ENVIA DADOS PARA O SERVIDOR
 
-        #O VETOR informacoesMesa está da seguinte forma [naipe1,valor1]
-    
-    #RETORNA PARA POSICAO ORIGINAL
     GPIO.output(base_dir,GPIO.LOW)
     for p in range(5):
         if i == 0:
